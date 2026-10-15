@@ -1,4 +1,4 @@
-package com.example.magicnotariax
+package com.duoc.magicnotaria
 
 import org.junit.Test
 

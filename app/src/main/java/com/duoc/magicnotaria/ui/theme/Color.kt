@@ -1,4 +1,4 @@
-package com.example.magicnotariax.ui.theme
+package com.duoc.magicnotaria.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

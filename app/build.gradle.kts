@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.magicnotariax"
+    namespace = "com.duoc.magicnotaria"
     compileSdk {
         version = release(37) {
             minorApiLevel = 1
@@ -12,7 +12,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.magicnotariax"
+        applicationId = "com.duoc.magicnotaria"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
