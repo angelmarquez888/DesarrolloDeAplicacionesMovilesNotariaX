@@ -1,33 +1,19 @@
 package com.duoc.magicnotaria.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 
-private val DarkColorScheme = darkColorScheme(
+private val EsquemaClaro = lightColorScheme(
     primary = DarkBlue,
     secondary = GoldYellow,
-    tertiary = Color.White
-)
-
-private val LightColorScheme = lightColorScheme(
-    primary = DarkBlue,
-    secondary = GoldYellow,
-    tertiary = Color.Black
+    background = FondoClaro
 )
 
 @Composable
-fun MagicNotariaTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
-) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
-
+fun MagicNotariaTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = EsquemaClaro,
         typography = Typography,
         content = content
     )
