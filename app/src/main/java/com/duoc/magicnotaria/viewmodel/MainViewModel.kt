@@ -4,17 +4,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.duoc.magicnotaria.model.Documento
 import com.duoc.magicnotaria.model.Usuario
 import com.duoc.magicnotaria.repository.AuthRepository
+import com.duoc.magicnotaria.repository.NotariaRepository
 
 class MainViewModel : ViewModel() {
     private val repository = AuthRepository()
+    private val notariaRepository = NotariaRepository()
 
-    // Usuario que inició sesión (null = nadie). La pantalla se actualiza sola si cambia.
     var usuarioActual by mutableStateOf<Usuario?>(null)
         private set
 
-    // Devuelve null si todo salió bien, o el mensaje de error
     fun intentarLogin(correo: String, clave: String): String? {
         if (correo.isBlank() || clave.isBlank()) return "Completa todos los campos"
         val usuario = repository.login(correo.trim(), clave)
@@ -41,5 +42,25 @@ class MainViewModel : ViewModel() {
 
     fun cerrarSesion() {
         usuarioActual = null
+        busqueda = ""
+    }
+
+    val categorias = notariaRepository.obtenerCategorias()
+
+    var documentos by mutableStateOf(notariaRepository.obtenerDocumentos())
+        private set
+
+    var busqueda by mutableStateOf("")
+        private set
+
+    fun cambiarBusqueda(texto: String) {
+        busqueda = texto
+    }
+
+    val documentosFiltrados: List<Documento>
+        get() = documentos.filter { it.titulo.contains(busqueda, ignoreCase = true) }
+
+    fun firmarDocumento(id: Int) {
+        documentos = documentos.map { if (it.id == id) it.copy(firmado = true) else it }
     }
 }
