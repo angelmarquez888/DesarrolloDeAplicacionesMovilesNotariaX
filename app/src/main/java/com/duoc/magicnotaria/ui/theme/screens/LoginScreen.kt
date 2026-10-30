@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.duoc.magicnotaria.model.Destinos
-import com.duoc.magicnotaria.ui.components.*
+import com.duoc.magicnotaria.ui.theme.components.*
 import com.duoc.magicnotaria.ui.theme.DarkBlue
 import com.duoc.magicnotaria.ui.theme.GoldYellow
 import com.duoc.magicnotaria.viewmodel.MainViewModel

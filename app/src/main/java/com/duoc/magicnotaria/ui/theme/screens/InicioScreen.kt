@@ -17,9 +17,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.duoc.magicnotaria.model.Destinos
-import com.duoc.magicnotaria.ui.components.PantallaConBarra
-import com.duoc.magicnotaria.ui.components.TarjetaBlanca
-import com.duoc.magicnotaria.ui.components.TituloMagicNotaria
+import com.duoc.magicnotaria.ui.theme.components.PantallaConBarra
+import com.duoc.magicnotaria.ui.theme.components.TarjetaBlanca
+import com.duoc.magicnotaria.ui.theme.components.TituloMagicNotaria
 import com.duoc.magicnotaria.ui.theme.DarkBlue
 import com.duoc.magicnotaria.ui.theme.VerdeOk
 import com.duoc.magicnotaria.viewmodel.MainViewModel

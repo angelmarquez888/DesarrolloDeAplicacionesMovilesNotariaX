@@ -1,5 +1,6 @@
 package com.duoc.magicnotaria.ui.theme.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,7 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.duoc.magicnotaria.model.Destinos
 import com.duoc.magicnotaria.model.Documento
-import com.duoc.magicnotaria.ui.components.*
+import com.duoc.magicnotaria.ui.theme.components.*
 import com.duoc.magicnotaria.ui.theme.*
 import com.duoc.magicnotaria.viewmodel.MainViewModel
 
@@ -88,6 +89,8 @@ fun DocumentosScreen(navController: NavController, viewModel: MainViewModel) {
         )
     }
 }
+
+
 
 @Composable
 private fun TarjetaDocumento(

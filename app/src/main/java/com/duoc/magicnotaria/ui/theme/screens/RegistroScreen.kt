@@ -19,9 +19,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.duoc.magicnotaria.ui.components.CampoTexto
-import com.duoc.magicnotaria.ui.components.TextoError
-import com.duoc.magicnotaria.ui.components.irAInicio
+import com.duoc.magicnotaria.ui.theme.components.CampoTexto
+import com.duoc.magicnotaria.ui.theme.components.TextoError
+import com.duoc.magicnotaria.ui.theme.components.irAInicio
 import com.duoc.magicnotaria.viewmodel.MainViewModel
 
 @Composable

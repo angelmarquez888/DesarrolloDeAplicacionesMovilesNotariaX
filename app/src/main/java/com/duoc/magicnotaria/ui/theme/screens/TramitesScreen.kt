@@ -54,17 +54,10 @@ fun TramitesScreen(navController: NavController, viewModel: MainViewModel) {
     }
 }
 
-@Composable
-fun EncabezadoClaro(x0: String, x1: String) {
-    TODO("Not yet implemented")
-}
 
-@Composable
-fun PantallaConBarra(x0: NavController, x1: String, content: @Composable (ERROR) -> Unit) {
-    TODO("Not yet implemented")
-}
 
-annotation class ERROR
+
+
 
 @Composable
 private fun TarjetaCategoria(categoria: CategoriaTramite, alElegir: (String) -> Unit) {
