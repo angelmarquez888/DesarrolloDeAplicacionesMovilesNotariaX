@@ -1,4 +1,4 @@
-package com.duoc.magicnotaria.database
+package com.duoc.magicnotaria.repository
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -14,4 +14,7 @@ interface UsuarioDao {
 
     @Query("SELECT * FROM usuarios WHERE correo = :correo AND clave = :clave LIMIT 1")
     suspend fun buscar(correo: String, clave: String): Usuario?
+
+    @Query("SELECT * FROM usuarios WHERE correo = :correo LIMIT 1")
+    suspend fun buscarPorCorreo(correo: String): Usuario?
 }

@@ -8,9 +8,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.duoc.magicnotaria.database.AppDatabase
 import com.duoc.magicnotaria.model.Documento
 import com.duoc.magicnotaria.model.Usuario
+import com.duoc.magicnotaria.repository.AppDatabase
 import com.duoc.magicnotaria.repository.AuthRepository
 import com.duoc.magicnotaria.repository.NotariaRepository
 import kotlinx.coroutines.launch
@@ -19,10 +19,14 @@ private val formatoRut = Regex("""^\d{1,2}\.?\d{3}\.?\d{3}-[\dkK]$""")
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val authRepository = AuthRepository(AppDatabase.obtener(application).usuarioDao())
+    private val authRepository = AppDatabase.obtener(application).let {
+        AuthRepository(it.usuarioDao(), it.sesionDao())
+    }
     private val notariaRepository = NotariaRepository()
 
     var usuarioActual by mutableStateOf<Usuario?>(null)
+        private set
+    var cargandoSesion by mutableStateOf(true)
         private set
     var fotoPerfil by mutableStateOf<Bitmap?>(null)
         private set
@@ -37,7 +41,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         get() = documentos.filter { it.titulo.contains(busqueda, ignoreCase = true) }
 
     init {
-        viewModelScope.launch { authRepository.crearUsuarioDePrueba() }
+        viewModelScope.launch {
+            authRepository.crearUsuarioDePrueba()
+            usuarioActual = authRepository.obtenerSesionActiva()
+            cargandoSesion = false
+        }
     }
 
     fun iniciarSesion(correo: String, clave: String, alTerminar: (String?) -> Unit) {
@@ -89,6 +97,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun cerrarSesion() {
+        viewModelScope.launch { authRepository.cerrarSesion() }
         usuarioActual = null
         fotoPerfil = null
         busqueda = ""

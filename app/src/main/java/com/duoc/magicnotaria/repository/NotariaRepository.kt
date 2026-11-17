@@ -26,3 +26,4 @@ class NotariaRepository {
         Documento(3, "Poder Notarial Amplio", "Ref: 1045-2026 • En proceso", false)
     )
 }
+

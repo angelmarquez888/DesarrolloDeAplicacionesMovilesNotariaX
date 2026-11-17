@@ -1,15 +1,17 @@
-package com.duoc.magicnotaria.database
+package com.duoc.magicnotaria.repository
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.duoc.magicnotaria.model.Sesion
 import com.duoc.magicnotaria.model.Usuario
 
-@Database(entities = [Usuario::class], version = 1, exportSchema = false)
+@Database(entities = [Usuario::class, Sesion::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun usuarioDao(): UsuarioDao
+    abstract fun sesionDao(): SesionDao
 
     companion object {
         @Volatile
@@ -18,7 +20,8 @@ abstract class AppDatabase : RoomDatabase() {
         fun obtener(context: Context): AppDatabase = instancia ?: synchronized(this) {
             instancia ?: Room.databaseBuilder(
                 context.applicationContext, AppDatabase::class.java, "magicnotaria.db"
-            ).build().also { instancia = it }
+            ).fallbackToDestructiveMigration(dropAllTables = true)
+                .build().also { instancia = it }
         }
     }
 }

@@ -41,9 +41,12 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppNotaria(viewModel: MainViewModel) {
-    val navController = rememberNavController()
+    if (viewModel.cargandoSesion) return
 
-    NavHost(navController = navController, startDestination = Destinos.LOGIN) {
+    val navController = rememberNavController()
+    val destinoInicial = if (viewModel.usuarioActual != null) Destinos.INICIO else Destinos.LOGIN
+
+    NavHost(navController = navController, startDestination = destinoInicial) {
         composable(Destinos.LOGIN) { LoginScreen(navController, viewModel) }
         composable(Destinos.REGISTRO) { RegistroScreen(navController, viewModel) }
         composable(Destinos.INICIO) { InicioScreen(navController, viewModel) }
