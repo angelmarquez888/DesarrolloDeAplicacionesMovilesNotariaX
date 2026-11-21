@@ -5,7 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
-    private const val URL_BASE = "https://x8ki-letl-twmt.n7.xano.io/api:FYyAtHhC/tramites"
+    private const val URL_BASE = "https://x8ki-letl-twmt.n7.xano.io/api:FYyAtHhC/tramites/."
 
     val notariaApi: NotariaApi by lazy {
         Retrofit.Builder()
