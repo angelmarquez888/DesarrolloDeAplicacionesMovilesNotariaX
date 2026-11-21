@@ -1,6 +1,5 @@
 package com.duoc.magicnotaria.ui.theme.screens
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -56,7 +55,9 @@ fun DocumentosScreen(navController: NavController, viewModel: MainViewModel) {
                 )
             }
 
-            if (documentos.isEmpty()) {
+            EstadoDeRed(viewModel.cargando, viewModel.mensajeError)
+
+            if (documentos.isEmpty() && !viewModel.cargando) {
                 Text("No se encontraron documentos", color = GrisTexto, modifier = Modifier.padding(24.dp))
             }
 
@@ -81,14 +82,16 @@ fun DocumentosScreen(navController: NavController, viewModel: MainViewModel) {
             titulo = "Firmar documento",
             texto = "¿Deseas firmar «${doc.titulo}»? Esta acción no se puede deshacer.",
             alConfirmar = {
-                viewModel.firmarDocumento(doc.id)
-                mostrarMensaje(context, "Documento firmado correctamente")
+                viewModel.firmarDocumento(doc) { error ->
+                    mostrarMensaje(context, error ?: "Documento firmado correctamente")
+                }
                 documentoPorFirmar = null
             },
             alCancelar = { documentoPorFirmar = null }
         )
     }
 }
+
 
 
 
@@ -148,7 +151,6 @@ private fun TarjetaDocumento(
     }
 }
 
-/** Etiqueta verde "FIRMADO" o amarilla "PENDIENTE". */
 @Composable
 private fun EtiquetaEstado(firmado: Boolean) {
     Text(
@@ -176,3 +178,4 @@ private fun BotonGris(texto: String, icono: ImageVector, modifier: Modifier, onC
         Text(texto, fontSize = 13.sp)
     }
 }
+

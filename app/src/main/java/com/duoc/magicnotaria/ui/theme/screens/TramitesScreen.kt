@@ -31,6 +31,7 @@ import com.duoc.magicnotaria.ui.theme.components.TarjetaBlanca
 import com.duoc.magicnotaria.ui.theme.components.mostrarMensaje
 import com.duoc.magicnotaria.ui.theme.*
 import com.duoc.magicnotaria.viewmodel.MainViewModel
+import com.duoc.magicnotaria.ui.theme.components.EstadoDeRed
 
 @Composable
 fun TramitesScreen(navController: NavController, viewModel: MainViewModel) {
@@ -39,6 +40,7 @@ fun TramitesScreen(navController: NavController, viewModel: MainViewModel) {
     PantallaConBarra(navController, Destinos.TRAMITES) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             EncabezadoClaro("Catálogo de Trámites", "Selecciona el servicio que necesitas")
+            EstadoDeRed(viewModel.cargando, viewModel.mensajeError)
 
             LazyColumn(
                 contentPadding = PaddingValues(16.dp),

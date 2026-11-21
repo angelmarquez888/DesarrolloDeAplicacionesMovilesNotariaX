@@ -36,17 +36,14 @@ import com.duoc.magicnotaria.ui.theme.GoldYellow
 import com.duoc.magicnotaria.ui.theme.GrisTexto
 
 
-/** Muestra un mensaje corto flotante (Toast) en la parte baja de la pantalla. */
 fun mostrarMensaje(context: Context, texto: String) {
     Toast.makeText(context, texto, Toast.LENGTH_SHORT).show()
 }
 
-/** Navega al inicio y borra login/registro del historial para que "atrás" no vuelva a ellos. */
 fun NavController.irAInicio() {
     navigate(Destinos.INICIO) { popUpTo(Destinos.LOGIN) { inclusive = true } }
 }
 
-/** Campo de texto con borde. Si esClave es true, oculta lo escrito con puntos. */
 @Composable
 fun CampoTexto(
     valor: String,
@@ -66,13 +63,11 @@ fun CampoTexto(
     )
 }
 
-/** Muestra el mensaje de error en rojo; si no hay error (null) no dibuja nada. */
 @Composable
 fun TextoError(texto: String?) {
     texto?.let { Text(it, color = MaterialTheme.colorScheme.error, fontSize = 13.sp) }
 }
 
-/** Tarjeta blanca con esquinas redondeadas y sombra suave. */
 @Composable
 fun TarjetaBlanca(modifier: Modifier = Modifier, contenido: @Composable ColumnScope.() -> Unit) {
     Card(
@@ -84,7 +79,6 @@ fun TarjetaBlanca(modifier: Modifier = Modifier, contenido: @Composable ColumnSc
     )
 }
 
-/** Imagen del logo (ic_logo.xml) sobre un cuadro azul oscuro. */
 @Composable
 fun LogoMagicNotaria() {
     Box(
@@ -99,7 +93,6 @@ fun LogoMagicNotaria() {
     }
 }
 
-/** Nombre de la app en dos colores: "Magic" (colorMagic) + "Notaria" (dorado). */
 @Composable
 fun TituloMagicNotaria(colorMagic: Color, tamano: TextUnit) {
     Text(
@@ -112,7 +105,6 @@ fun TituloMagicNotaria(colorMagic: Color, tamano: TextUnit) {
     )
 }
 
-/** Encabezado blanco con título, subtítulo opcional y contenido extra (ej: buscador). */
 @Composable
 fun EncabezadoClaro(
     titulo: String,
@@ -128,7 +120,6 @@ fun EncabezadoClaro(
     }
 }
 
-/** MODAL: ventana emergente que pide confirmar o cancelar una acción importante. */
 @Composable
 fun DialogoConfirmacion(
     titulo: String,
@@ -145,7 +136,6 @@ fun DialogoConfirmacion(
     )
 }
 
-/** Estructura de las pantallas principales: contenido + barra de navegación inferior. */
 @Composable
 fun PantallaConBarra(
     navController: NavController,
@@ -157,6 +147,16 @@ fun PantallaConBarra(
         bottomBar = { BarraInferior(navController, rutaActual) },
         content = contenido
     )
+}
+
+@Composable
+fun EstadoDeRed(cargando: Boolean, error: String?) {
+    if (cargando) {
+        LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), color = GoldYellow)
+    }
+    if (error != null) {
+        Box(modifier = Modifier.padding(16.dp)) { TextoError(error) }
+    }
 }
 
 @Composable
