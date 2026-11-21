@@ -4,5 +4,6 @@ data class Documento(
     val id: Int,
     val titulo: String,
     val detalle: String,
-    val firmado: Boolean
+    val firmado: Boolean,
+    val correoUsuario: String
 )

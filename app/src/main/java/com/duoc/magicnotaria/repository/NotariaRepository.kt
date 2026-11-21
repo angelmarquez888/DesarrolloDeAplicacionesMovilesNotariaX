@@ -2,28 +2,36 @@ package com.duoc.magicnotaria.repository
 
 import com.duoc.magicnotaria.model.CategoriaTramite
 import com.duoc.magicnotaria.model.Documento
+import com.duoc.magicnotaria.model.NuevoDocumento
+import retrofit2.HttpException
 
-class NotariaRepository {
+class NotariaRepository(
+    private val api: NotariaApi = RetrofitClient.notariaApi
+) {
 
-    fun obtenerCategorias(): List<CategoriaTramite> = listOf(
-        CategoriaTramite(
-            "Poderes y Mandatos",
-            listOf("Emitir Poder Simple", "Mandato General")
-        ),
-        CategoriaTramite(
-            "Vehículos",
-            listOf("Transferencia de Vehículos")
-        ),
-        CategoriaTramite(
-            "Certificaciones",
-            listOf("Salvoconducto Mudanza", "Autenticación de Firmas", "Declaración Jurada")
+    suspend fun obtenerCategorias(): List<CategoriaTramite> =
+        api.obtenerTramites()
+            .groupBy { it.categoria }
+            .map { (titulo, tramites) -> CategoriaTramite(titulo, tramites.map { it.nombre }) }
+
+    suspend fun obtenerDocumentos(correoUsuario: String): List<Documento> =
+        try {
+            api.obtenerDocumentos(correoUsuario)
+        } catch (error: HttpException) {
+            if (error.code() == 404) emptyList() else throw error
+        }
+
+    suspend fun iniciarTramite(nombreTramite: String, correoUsuario: String): Documento =
+        api.crearDocumento(
+            NuevoDocumento(
+                titulo = nombreTramite,
+                detalle = "Trámite iniciado desde la app • En proceso",
+                firmado = false,
+                correoUsuario = correoUsuario
+            )
         )
-    )
 
-    fun obtenerDocumentos(): List<Documento> = listOf(
-        Documento(1, "Compraventa de Vehículo", "Ref: 0984-2026 • 12 Oct 2026", true),
-        Documento(2, "Declaración Jurada Simple", "Ref: 0112-2026 • 05 Sep 2026", true),
-        Documento(3, "Poder Notarial Amplio", "Ref: 1045-2026 • En proceso", false)
-    )
+    suspend fun firmarDocumento(documento: Documento): Documento =
+        api.firmarDocumento(documento.id)
 }
 
