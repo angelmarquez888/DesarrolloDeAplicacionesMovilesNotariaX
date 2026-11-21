@@ -13,12 +13,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.duoc.magicnotaria.model.Destinos
-import com.duoc.magicnotaria.ui.theme.screens.*
 import com.duoc.magicnotaria.ui.theme.MagicNotariaTheme
+import com.duoc.magicnotaria.ui.theme.screens.CitaScreen
 import com.duoc.magicnotaria.ui.theme.screens.DocumentosScreen
+import com.duoc.magicnotaria.ui.theme.screens.FirmasScreen
 import com.duoc.magicnotaria.ui.theme.screens.InicioScreen
 import com.duoc.magicnotaria.ui.theme.screens.LoginScreen
-import com.duoc.magicnotaria.ui.theme.screens.PantallaSimple
 import com.duoc.magicnotaria.ui.theme.screens.PerfilScreen
 import com.duoc.magicnotaria.ui.theme.screens.RegistroScreen
 import com.duoc.magicnotaria.ui.theme.screens.TramitesScreen
@@ -53,7 +53,7 @@ fun AppNotaria(viewModel: MainViewModel) {
         composable(Destinos.TRAMITES) { TramitesScreen(navController, viewModel) }
         composable(Destinos.DOCUMENTOS) { DocumentosScreen(navController, viewModel) }
         composable(Destinos.PERFIL) { PerfilScreen(navController, viewModel) }
-        composable(Destinos.FIRMAS) { PantallaSimple(navController, "Firmas Pendientes") }
-        composable(Destinos.CITA) { PantallaSimple(navController, "Agendar Cita") }
+        composable(Destinos.FIRMAS) { FirmasScreen(navController, viewModel) }
+        composable(Destinos.CITA) { CitaScreen(navController, viewModel) }
     }
 }

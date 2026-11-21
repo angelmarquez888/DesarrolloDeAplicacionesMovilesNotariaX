@@ -17,6 +17,7 @@ import com.duoc.magicnotaria.repository.NotariaRepository
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+import com.duoc.magicnotaria.model.Cita
 
 private val formatoRut = Regex("""^\d{1,2}\.?\d{3}\.?\d{3}-[\dkK]$""")
 
@@ -37,6 +38,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         private set
     var documentos by mutableStateOf<List<Documento>>(emptyList())
         private set
+
+    var citas by mutableStateOf<List<Cita>>(emptyList())
+        private set
     var busqueda by mutableStateOf("")
         private set
     var cargando by mutableStateOf(false)
@@ -46,13 +50,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     val documentosFiltrados: List<Documento>
         get() = documentos.filter { it.titulo.contains(busqueda, ignoreCase = true) }
+    val documentosPendientes: List<Documento>
+        get() = documentos.filter { !it.firmado }
 
     init {
         viewModelScope.launch {
             authRepository.crearUsuarioDePrueba()
             usuarioActual = authRepository.obtenerSesionActiva()
             cargandoSesion = false
-            cargarDocumentos()
+            cargarDatosDelUsuario()
         }
         cargarCategorias()
     }
@@ -65,7 +71,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             val usuario = authRepository.login(correo.trim().lowercase(), clave)
             usuarioActual = usuario
-            if (usuario != null) cargarDocumentos()
+            if (usuario != null) cargarDatosDelUsuario()
             alTerminar(if (usuario == null) "Correo o contraseña incorrectos" else null)
         }
     }
@@ -87,7 +93,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             if (authRepository.registrar(nuevo)) {
                 usuarioActual = nuevo
-                cargarDocumentos()
+                cargarDatosDelUsuario()
                 alTerminar(null)
             } else {
                 alTerminar("Ese correo ya está registrado")
@@ -113,6 +119,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         fotoPerfil = null
         busqueda = ""
         documentos = emptyList()
+        citas = emptyList()
     }
 
     fun cambiarFoto(foto: Bitmap) {
@@ -123,7 +130,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         busqueda = texto
     }
 
-    /** Crea un documento pendiente en la API a partir del trámite elegido. alTerminar recibe null si todo salió bien. */
+
     fun iniciarTramite(nombreTramite: String, alTerminar: (String?) -> Unit) {
         val correo = usuarioActual?.correo ?: return
         viewModelScope.launch {
@@ -135,12 +142,46 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    /** Firma el documento en la API y actualiza la lista local. alTerminar recibe null si todo salió bien. */
+
     fun firmarDocumento(documento: Documento, alTerminar: (String?) -> Unit) {
         viewModelScope.launch {
             ejecutarConRed {
                 val firmado = notariaRepository.firmarDocumento(documento)
                 documentos = documentos.map { if (it.id == firmado.id) firmado else it }
+            }
+            alTerminar(mensajeError)
+        }
+    }
+    fun eliminarDocumento(documento: Documento, alTerminar: (String?) -> Unit) {
+        viewModelScope.launch {
+            ejecutarConRed {
+                notariaRepository.eliminarDocumento(documento.id)
+                documentos = documentos.filter { it.id != documento.id }
+            }
+            alTerminar(mensajeError)
+        }
+    }
+
+    fun agendarCita(motivo: String, fecha: String, hora: String, alTerminar: (String?) -> Unit) {
+        if (motivo.isBlank() || fecha.isBlank() || hora.isBlank()) {
+            alTerminar("Completa el motivo, la fecha y la hora")
+            return
+        }
+        val correo = usuarioActual?.correo ?: return
+        viewModelScope.launch {
+            ejecutarConRed {
+                val creada = notariaRepository.agendarCita(motivo.trim(), fecha, hora, correo)
+                citas = citas + creada
+            }
+            alTerminar(mensajeError)
+        }
+    }
+
+    fun cancelarCita(cita: Cita, alTerminar: (String?) -> Unit) {
+        viewModelScope.launch {
+            ejecutarConRed {
+                notariaRepository.cancelarCita(cita.id)
+                citas = citas.filter { it.id != cita.id }
             }
             alTerminar(mensajeError)
         }
@@ -152,14 +193,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun cargarDocumentos() {
+    private fun cargarDatosDelUsuario() {
         val correo = usuarioActual?.correo ?: return
         viewModelScope.launch {
             ejecutarConRed { documentos = notariaRepository.obtenerDocumentos(correo) }
+            ejecutarConRed { citas = notariaRepository.obtenerCitas(correo) }
         }
     }
 
-    /** Ejecuta una llamada a la API mostrando "cargando" y traduciendo los fallos de red a un mensaje legible. */
     private suspend fun ejecutarConRed(llamada: suspend () -> Unit) {
         cargando = true
         mensajeError = null
