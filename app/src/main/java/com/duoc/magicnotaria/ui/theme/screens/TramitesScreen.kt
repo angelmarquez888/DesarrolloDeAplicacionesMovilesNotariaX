@@ -25,13 +25,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.duoc.magicnotaria.model.CategoriaTramite
 import com.duoc.magicnotaria.model.Destinos
+import com.duoc.magicnotaria.ui.theme.*
 import com.duoc.magicnotaria.ui.theme.components.EncabezadoClaro
+import com.duoc.magicnotaria.ui.theme.components.EstadoDeRed
 import com.duoc.magicnotaria.ui.theme.components.PantallaConBarra
 import com.duoc.magicnotaria.ui.theme.components.TarjetaBlanca
 import com.duoc.magicnotaria.ui.theme.components.mostrarMensaje
-import com.duoc.magicnotaria.ui.theme.*
 import com.duoc.magicnotaria.viewmodel.MainViewModel
-import com.duoc.magicnotaria.ui.theme.components.EstadoDeRed
 
 @Composable
 fun TramitesScreen(navController: NavController, viewModel: MainViewModel) {
@@ -48,18 +48,15 @@ fun TramitesScreen(navController: NavController, viewModel: MainViewModel) {
             ) {
                 items(viewModel.categorias) { categoria ->
                     TarjetaCategoria(categoria) { tramite ->
-                        mostrarMensaje(context, "Iniciando: $tramite")
+                        viewModel.iniciarTramite(tramite) { error ->
+                            mostrarMensaje(context, error ?: "Trámite iniciado: $tramite")
+                        }
                     }
                 }
             }
         }
     }
 }
-
-
-
-
-
 
 @Composable
 private fun TarjetaCategoria(categoria: CategoriaTramite, alElegir: (String) -> Unit) {
