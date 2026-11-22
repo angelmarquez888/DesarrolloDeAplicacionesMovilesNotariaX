@@ -23,6 +23,14 @@ import com.duoc.magicnotaria.ui.theme.components.TituloMagicNotaria
 import com.duoc.magicnotaria.ui.theme.DarkBlue
 import com.duoc.magicnotaria.ui.theme.VerdeOk
 import com.duoc.magicnotaria.viewmodel.MainViewModel
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 
 private val accesosRapidos = listOf(
     Triple("Iniciar Trámite", Icons.Default.Edit, Destinos.TRAMITES),
@@ -34,6 +42,22 @@ private val accesosRapidos = listOf(
 @Composable
 fun InicioScreen(navController: NavController, viewModel: MainViewModel) {
     val nombre = viewModel.usuarioActual?.nombre?.substringBefore(" ") ?: "Usuario"
+
+    val context = LocalContext.current
+
+    val solicitarPermisoNotificaciones = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { }
+
+    LaunchedEffect(Unit) {
+        val requierePermiso = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+        val sinPermiso = ContextCompat.checkSelfPermission(
+            context, Manifest.permission.POST_NOTIFICATIONS
+        ) != PackageManager.PERMISSION_GRANTED
+        if (requierePermiso && sinPermiso) {
+            solicitarPermisoNotificaciones.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
 
     PantallaConBarra(navController, Destinos.INICIO) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
@@ -50,7 +74,9 @@ fun InicioScreen(navController: NavController, viewModel: MainViewModel) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     TituloMagicNotaria(colorMagic = Color.White, tamano = 20.sp)
-                    Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.White)
+                    IconButton(onClick = viewModel::avisarFirmasPendientes) {
+                        Icon(Icons.Default.Notifications, contentDescription = "Avisos", tint = Color.White)
+                    }
                 }
                 Spacer(Modifier.height(20.dp))
                 Text("Bienvenido de vuelta,", color = Color.White.copy(alpha = 0.7f), fontSize = 13.sp)

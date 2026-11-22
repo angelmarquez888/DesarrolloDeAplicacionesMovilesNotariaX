@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 import com.duoc.magicnotaria.model.Cita
+import com.duoc.magicnotaria.util.NotificadorNotaria
 
 private val formatoRut = Regex("""^\d{1,2}\.?\d{3}\.?\d{3}-[\dkK]$""")
 
@@ -27,6 +28,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         AuthRepository(it.usuarioDao(), it.sesionDao())
     }
     private val notariaRepository = NotariaRepository()
+
+    private val notificador = NotificadorNotaria(application)
 
     var usuarioActual by mutableStateOf<Usuario?>(null)
         private set
@@ -135,8 +138,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val correo = usuarioActual?.correo ?: return
         viewModelScope.launch {
             ejecutarConRed {
+
                 val creado = notariaRepository.iniciarTramite(nombreTramite, correo)
                 documentos = documentos + creado
+            }
+            if (mensajeError == null) {
+                notificador.mostrar("Trámite iniciado", "«$nombreTramite» quedó pendiente de firma")
             }
             alTerminar(mensajeError)
         }
@@ -148,6 +155,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             ejecutarConRed {
                 val firmado = notariaRepository.firmarDocumento(documento)
                 documentos = documentos.map { if (it.id == firmado.id) firmado else it }
+                if (mensajeError == null) {
+                    notificador.mostrar("Documento firmado", "«${documento.titulo}» fue firmado correctamente")
+                }
             }
             alTerminar(mensajeError)
         }
@@ -172,6 +182,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             ejecutarConRed {
                 val creada = notariaRepository.agendarCita(motivo.trim(), fecha, hora, correo)
                 citas = citas + creada
+                if (mensajeError == null) {
+                    notificador.mostrar("Cita agendada", "$motivo: $fecha a las $hora")
+                }
             }
             alTerminar(mensajeError)
         }
@@ -185,6 +198,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
             alTerminar(mensajeError)
         }
+    }
+    fun avisarFirmasPendientes() {
+        val cantidad = documentosPendientes.size
+        val mensaje = when (cantidad) {
+            0 -> "No tienes firmas pendientes"
+            1 -> "Tienes 1 documento esperando tu firma"
+            else -> "Tienes $cantidad documentos esperando tu firma"
+        }
+        notificador.mostrar("Firmas pendientes", mensaje)
     }
 
     private fun cargarCategorias() {
