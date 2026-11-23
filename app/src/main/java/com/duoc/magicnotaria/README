@@ -1,0 +1,62 @@
+# MagicNotaria
+
+Aplicación móvil Android para gestionar trámites notariales: iniciar trámites, firmar documentos, agendar citas y administrar el perfil del usuario.
+
+Proyecto de la asignatura Desarrollo de Aplicaciones Móviles, DUOC UC.
+**Autor:** [Tu nombre] · **Tablero Trello:** [enlace al tablero]
+
+## Tecnologías
+
+- Kotlin y Jetpack Compose (Material 3)
+- Arquitectura MVVM
+- Retrofit + Gson para consumir la API
+- Room para usuarios y sesión local
+- Corrutinas de Kotlin
+- API REST alojada en Xano
+
+## Arquitectura (MVVM)
+
+| Capa | Paquete | Responsabilidad |
+|---|---|---|
+| Modelo | `model` | Clases de datos (`Documento`, `Cita`, `Tramite`, `Usuario`...) y rutas de navegación |
+| Repositorio | `repository` | Acceso a datos: API con Retrofit (`NotariaApi`, `NotariaRepository`) y base local con Room (`AuthRepository`, DAOs) |
+| ViewModel | `viewmodel` | `MainViewModel`: estado de la app, reglas de negocio y llamadas a los repositorios |
+| Vista | `ui/theme/screens` y `components` | Pantallas Compose que solo muestran el estado y notifican acciones |
+| Utilidades | `util` | `Validadores` (reglas de registro) y `NotificadorNotaria` (notificaciones) |
+
+## Consumo de APIs externas
+
+API REST creada en Xano. Se consumen 8 endpoints distintos:
+
+| # | Método | Ruta | Uso en la app |
+|---|---|---|---|
+| 1 | GET | `/tramites` | Catálogo de trámites |
+| 2 | GET | `/documentos?correoUsuario=` | Documentos del usuario |
+| 3 | POST | `/documentos` | Iniciar un trámite (crea un documento pendiente) |
+| 4 | PUT | `/documentos/{id}/firmar` | Firmar un documento |
+| 5 | DELETE | `/documentos/{id}` | Cancelar un trámite pendiente |
+| 6 | GET | `/citas?correoUsuario=` | Citas del usuario |
+| 7 | POST | `/citas` | Agendar una cita |
+| 8 | DELETE | `/citas/{id}` | Cancelar una cita |
+
+## Recursos nativos
+
+1. **Cámara:** foto de perfil del usuario (pantalla Perfil).
+2. **Notificaciones locales:** avisos al iniciar un trámite, firmar un documento, agendar una cita y desde la campana de Inicio (firmas pendientes). Pide el permiso `POST_NOTIFICATIONS` en Android 13 o superior.
+
+## Pruebas unitarias
+
+- `ValidadoresTest`: 7 pruebas de las reglas de validación del registro (RUT, correo, contraseña).
+- `NotariaRepositoryTest`: 3 pruebas del repositorio con una API falsa (agrupación de trámites, creación y firma de documentos).
+
+Ejecución: `./gradlew testDebugUnitTest`
+
+## Cómo ejecutar el proyecto
+
+1. Abrir la carpeta en Android Studio y esperar el *Sync* de Gradle.
+2. Ejecutar en un emulador o celular con Android 7.0 (API 24) o superior. Requiere internet.
+3. Usuario de prueba: `an.marquez@duoc.cl` / `123456`.
+
+## Generar el APK firmado (release)
+
+*Build → Generate App Bundles or APKs → Generate APKs → APK → variante release*, firmando con un keystore propio. El archivo queda en `app/release/app-release.apk`. El keystore no se incluye en el repositorio.
