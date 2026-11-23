@@ -8,14 +8,12 @@ class AuthRepository(
     private val sesionDao: SesionDao
 ) {
 
-    /** Valida credenciales y, si son correctas, deja la sesión guardada en Room. */
     suspend fun login(correo: String, clave: String): Usuario? {
         val usuario = usuarioDao.buscar(correo, clave) ?: return null
         guardarSesion(usuario)
         return usuario
     }
 
-    /** Registra al usuario y deja su sesión iniciada. Devuelve false si el correo ya existe. */
     suspend fun registrar(usuario: Usuario): Boolean {
         val creado = usuarioDao.insertar(usuario) != -1L
         if (creado) guardarSesion(usuario)
@@ -26,7 +24,6 @@ class AuthRepository(
         sesionDao.guardar(Sesion(correo = usuario.correo))
     }
 
-    /** Devuelve el usuario con sesión activa (si la hay) al abrir la app. */
     suspend fun obtenerSesionActiva(): Usuario? {
         val sesion = sesionDao.obtener() ?: return null
         return usuarioDao.buscarPorCorreo(sesion.correo)
@@ -35,7 +32,6 @@ class AuthRepository(
 
     suspend fun cerrarSesion() = sesionDao.borrar()
 
-    /** Inserta el usuario de prueba sin tocar la sesión. */
     suspend fun crearUsuarioDePrueba() {
         usuarioDao.insertar(
             Usuario(
